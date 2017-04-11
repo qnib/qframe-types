@@ -1,7 +1,5 @@
 package qtypes
 
-package qtypes
-
 import (
 	"time"
 	"github.com/qnib/qframe-utils"
