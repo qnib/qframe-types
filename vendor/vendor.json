@@ -1,6 +1,13 @@
 {
 	"comment": "",
 	"ignore": "test",
-	"package": [],
+	"package": [
+		{
+			"checksumSHA1": "E4pS76cF5huNrgXLvhDe80076BI=",
+			"path": "github.com/qnib/qframe-utils",
+			"revision": "c82a62f900990a781059e80781d9c943ade050ea",
+			"revisionTime": "2017-04-11T20:25:15Z"
+		}
+	],
 	"rootPath": "github.com/qnib/qframe-types"
 }
