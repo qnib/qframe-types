@@ -7,6 +7,8 @@ import (
 type Plugin struct {
 	QChan QChan
 	Cfg config.Config
+	Version string
+	Name string
 }
 
 func NewPlugin(qChan QChan, cfg config.Config) Plugin {
