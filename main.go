@@ -6,31 +6,33 @@ import (
 )
 
 type QMsg struct {
-	QmsgVersion string            `json:qmsg_version`
-	Type        string            `json:"type"`
-	Source      string            `json:"source"`
-	SourcePath  []string          `json:"source_path"`
-	SourceID    uint64            `json:"source_id"`
-	Host        string            `json:"host"`
-	Msg         string            `json:"short_message"`
-	Time        time.Time         `json:"time"`
-	TimeNano    int64             `json:"time_nano"`
-	Level       int               `json:"level"` //https://en.wikipedia.org/wiki/Syslog#Severity_level
-	KV          map[string]string `json:"kv"`
-	Data        interface{}       `json:"data"`
+	QmsgVersion 	string            `json:qmsg_version`
+	Type        	string            `json:"type"`
+	Source      	string            `json:"source"`
+	SourceSuccess	bool			  `json:"source_success"`
+	SourcePath  	[]string          `json:"source_path"`
+	SourceID    	uint64            `json:"source_id"`
+	Host        	string            `json:"host"`
+	Msg         	string            `json:"short_message"`
+	Time        	time.Time         `json:"time"`
+	TimeNano    	int64             `json:"time_nano"`
+	Level       	int               `json:"level"` 		//https://en.wikipedia.org/wiki/Syslog#Severity_level
+	KV          	map[string]string `json:"kv"`
+	Data        	interface{}       `json:"data"`
 }
 
 func NewQMsg(typ, source string) QMsg {
 	now := time.Now()
 	return QMsg{
-		QmsgVersion: "0.1.0",
-		Type:        typ,
-		Level:       6,
-		Source:      source,
-		SourceID:    qutils.GetGID(),
-		SourcePath:  []string{source},
-		Time:        now,
-		TimeNano:    now.UnixNano(),
+		QmsgVersion: 	"0.1.0",
+		Type:        	typ,
+		Level:       	6,
+		Source:      	source,
+		SourceSuccess:	true,
+		SourceID:    	qutils.GetGID(),
+		SourcePath:  	[]string{source},
+		Time:        	now,
+		TimeNano:    	now.UnixNano(),
 	}
 }
 
