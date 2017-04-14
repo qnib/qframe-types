@@ -9,6 +9,7 @@ type QMsg struct {
 	QmsgVersion string            `json:qmsg_version`
 	Type        string            `json:"type"`
 	Source      string            `json:"source"`
+	SourcePath  []string          `json:"source_path"`
 	SourceID    uint64            `json:"source_id"`
 	Host        string            `json:"host"`
 	Msg         string            `json:"short_message"`
@@ -27,6 +28,7 @@ func NewQMsg(typ, source string) QMsg {
 		Level:       6,
 		Source:      source,
 		SourceID:    qutils.GetGID(),
+		SourcePath:  []string{source},
 		Time:        now,
 		TimeNano:    now.UnixNano(),
 	}
