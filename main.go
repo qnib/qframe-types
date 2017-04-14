@@ -8,15 +8,16 @@ import (
 
 
 type QMsg struct {
-	Type        string        `json:"type"`
-	Source      string        `json:"source"`
-	SourceID    uint64        `json:"source_id"`
-	Host        string        `json:"host"`
-	Msg         string        `json:"short_message"`
-	Time        time.Time     `json:"time"`
-	TimeNano    int64         `json:"time_nano"`
-	Level       int           `json:"level"` //https://en.wikipedia.org/wiki/Syslog#Severity_level
-	Data 	    interface{}
+	Type        string        		`json:"type"`
+	Source      string        		`json:"source"`
+	SourceID    uint64        		`json:"source_id"`
+	Host        string        		`json:"host"`
+	Msg         string        		`json:"short_message"`
+	Time        time.Time    	 	`json:"time"`
+	TimeNano    int64        	 	`json:"time_nano"`
+	Level       int          	 	`json:"level"` //https://en.wikipedia.org/wiki/Syslog#Severity_level
+	KV          map[string]string	`json:"kv"`
+	Data 	    interface{}			`json:"data"`
 }
 
 func NewQMsg(typ, source string) QMsg {
