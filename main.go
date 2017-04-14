@@ -3,11 +3,13 @@ package qtypes
 import (
 	"time"
 	"github.com/qnib/qframe-utils"
+	"github.com/qnib/QNIBCollect/src/github.com/hashicorp/go-version"
 )
 
 
 
 type QMsg struct {
+	qmsgVersion string				`json:qmsg_version`
 	Type        string        		`json:"type"`
 	Source      string        		`json:"source"`
 	SourceID    uint64        		`json:"source_id"`
@@ -23,6 +25,7 @@ type QMsg struct {
 func NewQMsg(typ, source string) QMsg {
 	now := time.Now()
 	return QMsg{
+		qmsgVersion: "0.0.0",
 		Type: typ,
 		Level: 6,
 		Source: source,
