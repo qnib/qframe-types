@@ -3,7 +3,6 @@ package qtypes
 import (
 	"time"
 	"github.com/qnib/qframe-utils"
-	"github.com/qnib/QNIBCollect/src/github.com/hashicorp/go-version"
 )
 
 
