@@ -40,6 +40,7 @@ func logStrToInt(level string) int {
 	}
 }
 
+
 func (p *Plugin) CfgString(path string) (string, error) {
 	res, err := p.Cfg.String(fmt.Sprintf("%s.%s.%s", p.Typ, p.Name, path))
 	return res, err
