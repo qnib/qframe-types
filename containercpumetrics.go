@@ -23,7 +23,7 @@ type CPUStats struct {
 	SystemUsagePercentage       float64
 }
 
-func (cs *CPUStats) ToMetrics() []qtypes.Metric {
+func (cs *CPUStats) ToMetrics() []Metric {
 	dim := map[string]string{
 		"container_id": cs.Container.ID,
 		"container_name": strings.Trim(cs.Container.Names[0], "/"),
@@ -31,10 +31,10 @@ func (cs *CPUStats) ToMetrics() []qtypes.Metric {
 		"command": cs.Container.Command,
 		"created": string(cs.Container.Created),
 	}
-	return []qtypes.Metric{
-		qtypes.NewExt("filter", "filter-dstat", "usage_kernel_percent", qtypes.Gauge, cs.UsageInKernelmodePercentage, dim, cs.Time, false),
-		qtypes.NewExt("filter", "filter-dstat", "usage_user_percent", qtypes.Gauge, cs.UsageInUsermodePercentage, dim, cs.Time, false),
-		qtypes.NewExt("filter", "filter-dstat", "system_usage_percent", qtypes.Gauge, cs.SystemUsagePercentage, dim, cs.Time, false),
+	return []Metric{
+		NewExt("filter", "filter-dstat", "usage_kernel_percent", Gauge, cs.UsageInKernelmodePercentage, dim, cs.Time, false),
+		NewExt("filter", "filter-dstat", "usage_user_percent", Gauge, cs.UsageInUsermodePercentage, dim, cs.Time, false),
+		NewExt("filter", "filter-dstat", "system_usage_percent", Gauge, cs.SystemUsagePercentage, dim, cs.Time, false),
 	}
 }
 

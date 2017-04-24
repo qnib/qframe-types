@@ -3,7 +3,7 @@ package qtypes
 import (
 	"github.com/fsouza/go-dockerclient"
 	"github.com/docker/docker/api/types"
-
+	"github.com/docker/docker/api/types/events"
 )
 
 type ContainerStats struct {
@@ -11,11 +11,14 @@ type ContainerStats struct {
 	Container docker.APIContainers
 }
 
-
+type ContainerEvent struct {
+	Event events.Message
+	Container types.Container
+}
 
 // Flat out copied from https://github.com/elastic/beats
 func (cs *ContainerStats) GetCpuStats() CPUStats {
-	cnt := types.Container{
+	cnt := &types.Container{
 		ID: cs.Container.ID,
 		Names: cs.Container.Names,
 		Command: cs.Container.Command,
