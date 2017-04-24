@@ -13,7 +13,7 @@ type ContainerStats struct {
 
 type ContainerEvent struct {
 	Event events.Message
-	Container types.Container
+	Container types.ContainerJSON
 }
 
 // Flat out copied from https://github.com/elastic/beats
