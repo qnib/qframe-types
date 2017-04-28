@@ -2,27 +2,19 @@ package qtypes
 
 
 import (
-	"context"
 	"fmt"
 	"errors"
-	"github.com/docker/docker/client"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/events"
 )
 
-const (
-	mobyAPI = "v1.29"
-)
-
 type ContainerInventory struct {
-	Client *client.Client
 	Data   map[string]types.ContainerJSON
 	IDtoIP map[string]string
 }
 
-func NewContainerInventory(cli *client.Client) ContainerInventory {
+func NewContainerInventory() ContainerInventory {
 	return ContainerInventory{
-		Client: cli,
 		Data: map[string]types.ContainerJSON{},
 		IDtoIP: map[string]string{},
 	}
@@ -31,15 +23,6 @@ func NewContainerInventory(cli *client.Client) ContainerInventory {
 func NewPlainContainerInventory() ContainerInventory {
 	return ContainerInventory{
 		Data: map[string]types.ContainerJSON{},
-	}
-}
-
-func NewContainerInventoryHost(dockerHost string) ContainerInventory {
-	engineCli, _ := client.NewClient(dockerHost, mobyAPI, nil, nil)
-	return ContainerInventory{
-		Client: engineCli,
-		Data: map[string]types.ContainerJSON{},
-		IDtoIP: map[string]string{},
 	}
 }
 
@@ -73,8 +56,9 @@ func (ci *ContainerInventory) GetCntByIP(ip string) (cnt types.ContainerJSON, er
 	return cnt, err
 }
 
-func (ci *ContainerInventory) SetCntByEvent(event events.Message) (err error) {
-	id := event.Actor.ID
+func (ci *ContainerInventory) SetCntByEvent(ce ContainerEvent) (err error) {
+	id := ce.Event.Actor.ID
+	event := ce.Event
 	if event.Type != "container" {
 		return
 	}
@@ -88,7 +72,7 @@ func (ci *ContainerInventory) SetCntByEvent(event events.Message) (err error) {
 		}
 		return
 	case "start":
-		cnt, err := ci.Client.ContainerInspect(context.Background(), id)
+		cnt := ce.Container
 		if err != nil {
 			return err
 		}
@@ -105,6 +89,8 @@ func (ci *ContainerInventory) SetCntByEvent(event events.Message) (err error) {
 }
 
 func (ci *ContainerInventory) GetCntByEvent(event events.Message) (cnt types.ContainerJSON, err error) {
+	fmt.Println("Sorry, have to redo GetCntByEvent...")
+	return
 	id := event.Actor.ID
 	if event.Type != "container" {
 		return
@@ -119,7 +105,6 @@ func (ci *ContainerInventory) GetCntByEvent(event events.Message) (cnt types.Con
 		}
 		return
 	case "start":
-		cnt, err = ci.Client.ContainerInspect(context.Background(), id)
 		ci.Data[id] = cnt
 		if cnt.State.Running {
 			for _, v := range cnt.NetworkSettings.Networks {
@@ -128,8 +113,6 @@ func (ci *ContainerInventory) GetCntByEvent(event events.Message) (cnt types.Con
 		} else {
 			fmt.Printf("cnt.State: %v\n", cnt.State)
 		}
-	default:
-		cnt, err = ci.Client.ContainerInspect(context.Background(), id)
 	}
 	return cnt, err
 }
