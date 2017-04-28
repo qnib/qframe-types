@@ -6,6 +6,7 @@ import (
 	"errors"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/events"
+	"github.com/kubernetes/kubernetes/pkg/registry/event"
 )
 
 type ContainerInventory struct {
@@ -88,14 +89,13 @@ func (ci *ContainerInventory) SetCntByEvent(ce ContainerEvent) (err error) {
 	return err
 }
 
-func (ci *ContainerInventory) GetCntByEvent(event events.Message) (cnt types.ContainerJSON, err error) {
-	fmt.Println("Sorry, have to redo GetCntByEvent...")
-	return
-	id := event.Actor.ID
-	if event.Type != "container" {
+func (ci *ContainerInventory) GetCntByEvent(ce ContainerEvent) (cnt types.ContainerJSON, err error) {
+	id := ce.Event.Actor.ID
+	cnt = ce.Container
+	if ce.Event.Type != "container" {
 		return
 	}
-	switch event.Action {
+	switch ce.Event.Action {
 	case "die", "destroy":
 		if _, ok := ci.IDtoIP[id]; ok {
 			delete(ci.IDtoIP, id)
@@ -110,8 +110,6 @@ func (ci *ContainerInventory) GetCntByEvent(event events.Message) (cnt types.Con
 			for _, v := range cnt.NetworkSettings.Networks {
 				ci.IDtoIP[id] = v.IPAddress
 			}
-		} else {
-			fmt.Printf("cnt.State: %v\n", cnt.State)
 		}
 	}
 	return cnt, err
