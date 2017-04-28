@@ -39,10 +39,7 @@ func (ci *ContainerInventory) GetCnt(key string) (cnt types.ContainerJSON, err e
 }
 
 func (ci *ContainerInventory) GetCntByID(id string) (cnt types.ContainerJSON, err error) {
-	if cnt, ok := ci.Data[id];ok {
-		return cnt, err
-	}
-	return cnt, err
+	return ci.GetCnt(id)
 }
 
 func (ci *ContainerInventory) GetCntByIP(ip string) (cnt types.ContainerJSON, err error) {
