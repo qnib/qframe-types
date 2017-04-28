@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"errors"
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/events"
-	"github.com/kubernetes/kubernetes/pkg/registry/event"
 )
 
 type ContainerInventory struct {
