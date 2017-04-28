@@ -23,6 +23,20 @@ type CPUStats struct {
 	SystemUsagePercentage       float64
 }
 
+func NewCPUStats(stats *dc.Stats) *CPUStats {
+	return &CPUStats{
+		Time: stats.Read,
+		PerCpuUsage: perCpuUsage(stats),
+		TotalUsage: totalUsage(stats),
+		UsageInKernelmode: stats.CPUStats.CPUUsage.UsageInKernelmode,
+		UsageInKernelmodePercentage: usageInKernelmode(stats),
+		UsageInUsermode: stats.CPUStats.CPUUsage.UsageInUsermode,
+		UsageInUsermodePercentage: usageInUsermode(stats),
+		SystemUsage: stats.CPUStats.SystemCPUUsage,
+		SystemUsagePercentage: systemUsage(stats),
+	}
+}
+
 func (cs *CPUStats) ToMetrics() []Metric {
 	dim := map[string]string{
 		"container_id": cs.Container.ID,
