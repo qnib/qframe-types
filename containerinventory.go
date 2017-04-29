@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"errors"
 	"github.com/docker/docker/api/types"
+	"strings"
 )
 
 type ContainerInventory struct {
@@ -34,8 +35,7 @@ func (ci *ContainerInventory) GetCnt(key string) (cnt types.ContainerJSON, err e
 	if cnt, ok := ci.Data[key];ok {
 		return cnt, err
 	}
-	err = errors.New(fmt.Sprintf("No container found with key '%s'", key))
-	return
+	return cnt, errors.New(fmt.Sprintf("No container found with key '%s'", key))
 }
 
 func (ci *ContainerInventory) GetCntByID(id string) (cnt types.ContainerJSON, err error) {
@@ -43,13 +43,14 @@ func (ci *ContainerInventory) GetCntByID(id string) (cnt types.ContainerJSON, er
 }
 
 func (ci *ContainerInventory) GetCntByIP(ip string) (cnt types.ContainerJSON, err error) {
+	fmt.Printf("Check for IP %s\n", ip)
 	for id, v := range ci.IDtoIP {
 		if ip == v {
 			return ci.GetCntByID(id)
 		}
 
 	}
-	return cnt, err
+	return cnt, errors.New(fmt.Sprintf("No container found with IP '%s'", ip))
 }
 
 func (ci *ContainerInventory) SetCntByEvent(ce ContainerEvent) (err error) {
@@ -79,6 +80,11 @@ func (ci *ContainerInventory) SetCntByEvent(ce ContainerEvent) (err error) {
 			}
 		} else {
 			fmt.Printf("cnt.State: %v\n", cnt.State)
+		}
+	default:
+		if strings.HasPrefix(event.Action, "exec_") {
+			// Not sure what to do here... it happens so often...
+			return
 		}
 	}
 	return err
