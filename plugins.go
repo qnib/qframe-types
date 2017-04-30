@@ -7,6 +7,12 @@ import (
 	"github.com/zpatrick/go-config"
 )
 
+const (
+	FILTER = "filter"
+	COLLECTOR = "collector"
+	HANDLER = "handler"
+)
+
 type Plugin struct {
 	QChan 	QChan
 	Cfg 	config.Config
@@ -48,6 +54,19 @@ func (p *Plugin) CfgString(path string) (string, error) {
 
 func (p *Plugin) CfgStringOr(path, alt string) string {
 	res, err := p.CfgString(path)
+	if err != nil {
+		return alt
+	}
+	return res
+}
+
+func (p *Plugin) CfgInt(path string) (int, error) {
+	res, err := p.Cfg.Int(fmt.Sprintf("%s.%s.%s", p.Typ, p.Name, path))
+	return res, err
+}
+
+func (p *Plugin) CfgIntOr(path string, alt int) int {
+	res, err := p.CfgInt(path)
 	if err != nil {
 		return alt
 	}
