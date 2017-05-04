@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+
 type QMsg struct {
 	QmsgVersion 	string            `json:qmsg_version`
 	Type        	string            `json:"type"`

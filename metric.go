@@ -19,7 +19,7 @@ const (
 // Metric type holds all the information for a single metric data
 // point. Metrics are generated in collectors and passed to handlers.
 type Metric struct {
-	QMsg
+	Base
 	Name       string            `json:"name"`
 	MetricType string            `json:"type"`
 	Value      float64           `json:"value"`
@@ -29,9 +29,9 @@ type Metric struct {
 
 // New returns a new metric with name. Default metric type is "gauge"
 // and timestamp is set to now. Value is initialized to 0.0.
-func New(typ, source, name string) Metric {
+func New(source, name string) Metric {
 	return Metric{
-		QMsg: NewQMsg(typ, source),
+		Base: 		NewBase(source),
 		Name:       sanitizeString(name),
 		MetricType: Gauge,
 		Value:      0.0,
@@ -41,17 +41,15 @@ func New(typ, source, name string) Metric {
 }
 
 // NewExt provides a more controled creation
-func NewExt(msgTyp, source, name string, metricTyp string, val float64, d map[string]string, t time.Time, b bool) Metric {
+func NewExt(source, name string, metricTyp string, val float64, d map[string]string, t time.Time, b bool) Metric {
 	m := Metric{
-		QMsg: NewQMsg(msgTyp, source),
+		Base: 		NewTimedBase(source, t),
 		Name:       sanitizeString(name),
 		MetricType: metricTyp,
 		Value:      val,
 		Dimensions: d,
 		Buffered:   b,
 	}
-	m.Time = t
-	m.TimeNano = t.UnixNano()
 	return m
 }
 
@@ -82,8 +80,8 @@ func NewFilter(name string, t string, d map[string]string) Filter {
 }
 
 // WithValue returns metric with value of type Gauge
-func WithValue(msgTyp, source, name string, value float64) Metric {
-	metric := New(msgTyp, source, name)
+func WithValue(source, name string, value float64) Metric {
+	metric := New(source, name)
 	metric.Value = value
 	return metric
 }
@@ -101,11 +99,6 @@ func (m *Metric) DisableBuffering() {
 // SetTime to metric
 func (m *Metric) SetTime(mtime time.Time) {
 	m.Time = mtime
-}
-
-// GetTime returns the time
-func (m *Metric) GetTime() time.Time {
-	return m.Time
 }
 
 // AddDimension adds a new dimension to the Metric.
@@ -142,14 +135,6 @@ func (m *Metric) GetDimensionValue(dimension string) (value string, ok bool) {
 	dimension = sanitizeString(dimension)
 	value, ok = m.Dimensions[dimension]
 	return
-}
-
-// ZeroValue is metric zero value
-func (m *Metric) ZeroValue() bool {
-	return (len(m.Name) == 0) &&
-		(len(m.MetricType) == 0) &&
-		(m.Value == 0.0) &&
-		(len(m.Dimensions) == 0)
 }
 
 // AddToAll adds a map of dimensions to a list of metrics

@@ -46,9 +46,9 @@ func (cs *CPUStats) ToMetrics() []Metric {
 		"created": string(cs.Container.Created),
 	}
 	return []Metric{
-		NewExt("filter", "filter-dstat", "usage_kernel_percent", Gauge, cs.UsageInKernelmodePercentage, dim, cs.Time, false),
-		NewExt("filter", "filter-dstat", "usage_user_percent", Gauge, cs.UsageInUsermodePercentage, dim, cs.Time, false),
-		NewExt("filter", "filter-dstat", "system_usage_percent", Gauge, cs.SystemUsagePercentage, dim, cs.Time, false),
+		NewExt("filter-dstat", "usage_kernel_percent", Gauge, cs.UsageInKernelmodePercentage, dim, cs.Time, false),
+		NewExt("filter-dstat", "usage_user_percent", Gauge, cs.UsageInUsermodePercentage, dim, cs.Time, false),
+		NewExt("filter-dstat", "system_usage_percent", Gauge, cs.SystemUsagePercentage, dim, cs.Time, false),
 	}
 }
 
