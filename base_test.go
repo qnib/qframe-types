@@ -42,3 +42,15 @@ func TestBase_AppendSrc(t *testing.T) {
 	assert.Equal(t, "src1", b.SourcePath[0])
 	assert.Equal(t, "src2", b.SourcePath[1])
 }
+
+func TestBase_IsLastSource(t *testing.T) {
+	b := NewBase("src1")
+	assert.True(t, b.IsLastSource("src1"), "Last source should be 'src1'")
+	b.AppendSource("src2")
+	assert.True(t, b.IsLastSource("src2"), "Last source should be 'src2'")
+}
+
+func TestBase_InputsMatch(t *testing.T) {
+	b := NewBase("src1")
+	assert.True(t, b.InputsMatch([]string{"src2", "src1"}), "Should match input list 'src2', 'src1'")
+}

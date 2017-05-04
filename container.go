@@ -7,8 +7,17 @@ import (
 )
 
 type ContainerStats struct {
+	Base
 	Stats *docker.Stats
 	Container docker.APIContainers
+}
+
+func NewContainerStats(src string, stats *docker.Stats, cnt docker.APIContainers) ContainerStats{
+	return ContainerStats{
+		Base: NewBase(src),
+		Stats: stats,
+		Container: cnt,
+	}
 }
 
 type ContainerEvent struct {

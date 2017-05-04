@@ -43,3 +43,17 @@ func (b *Base) GetTimeUnixNano() int64 {
 func (b *Base) AppendSource(src string) {
 	b.SourcePath = append(b.SourcePath, src)
 }
+
+func (b *Base) IsLastSource(src string) bool {
+	return b.SourcePath[len(b.SourcePath)-1] == src
+}
+
+func (b *Base) InputsMatch(inputs []string) bool {
+	for _, inp := range inputs {
+		if b.IsLastSource(inp) {
+			return true
+		}
+
+	}
+	return false
+}
