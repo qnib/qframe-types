@@ -33,8 +33,10 @@ func (cs *ContainerStats) GetCpuStats() CPUStats {
 		Command: cs.Container.Command,
 		Created: cs.Container.Created,
 		Image: cs.Container.Image,
+		Labels: cs.Container.Labels,
 	}
 	return CPUStats{
+		Base: cs.Base,
 		Container:                   cnt,
 		PerCpuUsage:                 perCpuUsage(cs.Stats),
 		TotalUsage:                  totalUsage(cs.Stats),

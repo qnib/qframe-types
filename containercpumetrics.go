@@ -6,6 +6,7 @@ import (
 	"github.com/elastic/beats/libbeat/common"
 	"github.com/docker/docker/api/types"
 	dc "github.com/fsouza/go-dockerclient"
+	"fmt"
 )
 
 // Inspired by https://github.com/elastic/beats/blob/master/metricbeat/module/docker/cpu/helper.go
@@ -41,11 +42,11 @@ func (cs *CPUStats) ToMetrics(src string) []Metric {
 		"container_id": cs.Container.ID,
 		"container_name": strings.Trim(cs.Container.Names[0], "/"),
 		"image_name": cs.Container.Image,
-		"command": cs.Container.Command,
-		"created": string(cs.Container.Created),
+		"command": strings.Replace(cs.Container.Command, " ", "#", -1),
+		"created": fmt.Sprintf("%d", cs.Container.Created),
 	}
 	for k, v := range cs.Container.Labels {
-		dim[k] = v
+		dim[k] = strings.Replace(v, " ", "#", -1)
 	}
 	return []Metric{
 		cs.NewExtMetric(src, "usage_kernel_percent", Gauge, cs.UsageInKernelmodePercentage, dim, cs.Time, true),
