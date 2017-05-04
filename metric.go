@@ -41,16 +41,24 @@ func New(source, name string) Metric {
 }
 
 // NewExt provides a more controled creation
-func NewExt(source, name string, metricTyp string, val float64, d map[string]string, t time.Time, b bool) Metric {
+func NewExt(source, name string, metricTyp string, val float64, dimensions map[string]string, t time.Time, buffered bool) Metric {
 	m := Metric{
 		Base: 		NewTimedBase(source, t),
 		Name:       sanitizeString(name),
 		MetricType: metricTyp,
 		Value:      val,
-		Dimensions: d,
-		Buffered:   b,
+		Dimensions: dimensions,
+		Buffered:   buffered,
 	}
 	return m
+}
+
+func (m *Metric) GetDimensionList() string {
+	res := []string{}
+	for k, v := range m.Dimensions {
+		res = append(res, fmt.Sprintf("%s=%s", k, v))
+	}
+	return strings.Join(res, ",")
 }
 
 // Filter provides a struct that can filter a metric by Name (regex), type, dimension (subset of Dimensions)

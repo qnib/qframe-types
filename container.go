@@ -35,7 +35,6 @@ func (cs *ContainerStats) GetCpuStats() CPUStats {
 		Image: cs.Container.Image,
 	}
 	return CPUStats{
-		Time:                        cs.Stats.Read,
 		Container:                   cnt,
 		PerCpuUsage:                 perCpuUsage(cs.Stats),
 		TotalUsage:                  totalUsage(cs.Stats),

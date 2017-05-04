@@ -1,7 +1,6 @@
 package qtypes
 
 import (
-	"time"
 	"strconv"
 	"strings"
 	"github.com/elastic/beats/libbeat/common"
@@ -11,7 +10,7 @@ import (
 
 // Inspired by https://github.com/elastic/beats/blob/master/metricbeat/module/docker/cpu/helper.go
 type CPUStats struct {
-	Time                        time.Time
+	Base
 	Container                   *types.Container
 	PerCpuUsage                 common.MapStr
 	TotalUsage                  float64
@@ -23,9 +22,9 @@ type CPUStats struct {
 	SystemUsagePercentage       float64
 }
 
-func NewCPUStats(stats *dc.Stats) *CPUStats {
+func NewCPUStats(src Base, stats *dc.Stats) *CPUStats {
 	return &CPUStats{
-		Time: stats.Read,
+		Base: src,
 		PerCpuUsage: perCpuUsage(stats),
 		TotalUsage: totalUsage(stats),
 		UsageInKernelmode: stats.CPUStats.CPUUsage.UsageInKernelmode,
@@ -37,7 +36,7 @@ func NewCPUStats(stats *dc.Stats) *CPUStats {
 	}
 }
 
-func (cs *CPUStats) ToMetrics() []Metric {
+func (cs *CPUStats) ToMetrics(src string) []Metric {
 	dim := map[string]string{
 		"container_id": cs.Container.ID,
 		"container_name": strings.Trim(cs.Container.Names[0], "/"),
@@ -45,10 +44,13 @@ func (cs *CPUStats) ToMetrics() []Metric {
 		"command": cs.Container.Command,
 		"created": string(cs.Container.Created),
 	}
+	for k, v := range cs.Container.Labels {
+		dim[k] = v
+	}
 	return []Metric{
-		NewExt("filter-dstat", "usage_kernel_percent", Gauge, cs.UsageInKernelmodePercentage, dim, cs.Time, false),
-		NewExt("filter-dstat", "usage_user_percent", Gauge, cs.UsageInUsermodePercentage, dim, cs.Time, false),
-		NewExt("filter-dstat", "system_usage_percent", Gauge, cs.SystemUsagePercentage, dim, cs.Time, false),
+		cs.NewExtMetric(src, "usage_kernel_percent", Gauge, cs.UsageInKernelmodePercentage, dim, cs.Time, true),
+		cs.NewExtMetric(src, "usage_user_percent", Gauge, cs.UsageInUsermodePercentage, dim, cs.Time, true),
+		cs.NewExtMetric(src, "system_usage_percent", Gauge, cs.SystemUsagePercentage, dim, cs.Time, true),
 	}
 }
 

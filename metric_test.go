@@ -25,3 +25,14 @@ func TestNewExtMetric(t *testing.T) {
 	assert.Equal(t, now, m.Time)
 	assert.Equal(t, false, m.Buffered)
 }
+
+func TestMetric_GetDimensionList(t *testing.T) {
+	now := time.Now()
+	dims := map[string]string{
+		"key1": "val1",
+		"key2": "val2",
+	}
+	m := NewExt("testSrc", "testMetric", Gauge, 1.0, dims, now, false)
+	got := m.GetDimensionList()
+	assert.Equal(t, "key1=val1,key2=val2", got)
+}

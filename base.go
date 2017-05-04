@@ -30,6 +30,19 @@ func NewTimedBase(src string, t time.Time) Base {
 	}
 }
 
+func (base *Base) NewExtMetric(src, name string, metricTyp string, val float64, dimensions map[string]string, t time.Time, buffered bool) Metric {
+	m := Metric{
+		Base: 		*base,
+		Name:       sanitizeString(name),
+		MetricType: metricTyp,
+		Value:      val,
+		Dimensions: dimensions,
+		Buffered:   buffered,
+	}
+	m.AppendSource(src)
+	return m
+}
+
 func (b *Base) GetTimeRFC() string {
 	return b.Time.Format("2006-01-02T15:04:05.999999-07:00")
 }
