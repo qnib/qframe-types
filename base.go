@@ -10,9 +10,10 @@ const (
 
 type Base struct {
 	BaseVersion string
-	Time		time.Time
-	SourceID	int
-	SourcePath	[]string
+	Time			time.Time
+	SourceID		int
+	SourcePath		[]string
+	SourceSuccess 	bool
 }
 
 func NewBase(src string) Base {
@@ -25,6 +26,7 @@ func NewTimedBase(src string, t time.Time) Base {
 		Time: t,
 		SourceID: 0,
 		SourcePath: []string{src},
+		SourceSuccess: true,
 	}
 }
 
