@@ -25,7 +25,7 @@ type QMsg struct {
 func NewQMsg(typ, source string) QMsg {
 	now := time.Now()
 	return QMsg{
-		QmsgVersion: 	"0.3.1",
+		QmsgVersion: 	"0.3.2",
 		Type:        	typ,
 		Level:       	6,
 		Source:      	source,
