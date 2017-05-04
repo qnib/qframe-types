@@ -2,14 +2,15 @@ package qtypes
 
 
 import (
-	"time"
+	"strings"
 	"github.com/docker/docker/api/types"
 	dc "github.com/fsouza/go-dockerclient"
+	"fmt"
 )
 
 // Inspired by https://github.com/elastic/beats/blob/master/metricbeat/module/docker/cpu/helper.go
 type MemoryStats struct {
-	Time        time.Time
+	Base
 	Container   *types.Container
 	Failcnt   	uint64
 	Limit     	uint64
@@ -20,9 +21,9 @@ type MemoryStats struct {
 	UsageP 		float64
 }
 
-func NewMemoryStats(stats *dc.Stats) MemoryStats {
+func NewMemoryStats(src Base, stats *dc.Stats) MemoryStats {
 	return MemoryStats{
-		Time:      stats.Read,
+		Base:      src,
 		Failcnt:   stats.MemoryStats.Failcnt,
 		Limit:     stats.MemoryStats.Limit,
 		MaxUsage:  stats.MemoryStats.MaxUsage,
@@ -33,3 +34,19 @@ func NewMemoryStats(stats *dc.Stats) MemoryStats {
 	}
 }
 
+func (ms *MemoryStats) ToMetrics(src string) []Metric {
+	dim := map[string]string{
+		"container_id": ms.Container.ID,
+		"container_name": strings.Trim(ms.Container.Names[0], "/"),
+		"image_name": ms.Container.Image,
+		"command": strings.Replace(ms.Container.Command, " ", "#", -1),
+		"created": fmt.Sprintf("%d", ms.Container.Created),
+	}
+	for k, v := range ms.Container.Labels {
+		dim[k] = strings.Replace(v, " ", "#", -1)
+	}
+	return []Metric{
+		ms.NewExtMetric(src, "memory.usage.percent", Gauge, ms.UsageP, dim, ms.Time, true),
+		ms.NewExtMetric(src, "memory.total_rss.percent", Gauge, ms.TotalRssP, dim, ms.Time, true),
+	}
+}

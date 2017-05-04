@@ -25,9 +25,8 @@ type ContainerEvent struct {
 	Container types.ContainerJSON
 }
 
-// Flat out copied from https://github.com/elastic/beats
-func (cs *ContainerStats) GetCpuStats() CPUStats {
-	cnt := &types.Container{
+func (cs *ContainerStats) GetContainer() *types.Container {
+	return &types.Container{
 		ID: cs.Container.ID,
 		Names: cs.Container.Names,
 		Command: cs.Container.Command,
@@ -35,6 +34,12 @@ func (cs *ContainerStats) GetCpuStats() CPUStats {
 		Image: cs.Container.Image,
 		Labels: cs.Container.Labels,
 	}
+}
+
+// Flat out copied from https://github.com/elastic/beats
+func (cs *ContainerStats) GetCpuStats() CPUStats {
+	cnt := cs.GetContainer()
+	// TODO: Use NewCPUStats?
 	return CPUStats{
 		Base: cs.Base,
 		Container:                   cnt,
@@ -46,5 +51,21 @@ func (cs *ContainerStats) GetCpuStats() CPUStats {
 		UsageInUsermodePercentage:   usageInUsermode(cs.Stats),
 		SystemUsage:                 cs.Stats.CPUStats.SystemCPUUsage,
 		SystemUsagePercentage:       systemUsage(cs.Stats),
+	}
+}
+
+func (cs *ContainerStats) GetMemStats() MemoryStats {
+	cnt := cs.GetContainer()
+	// TODO: Use NewMemoryStats?
+	return MemoryStats{
+		Base: cs.Base,
+		Container: cnt,
+		Failcnt:   cs.Stats.MemoryStats.Failcnt,
+		Limit:     cs.Stats.MemoryStats.Limit,
+		MaxUsage:  cs.Stats.MemoryStats.MaxUsage,
+		TotalRss:  cs.Stats.MemoryStats.Stats.TotalRss,
+		TotalRssP: float64(cs.Stats.MemoryStats.Stats.TotalRss) / float64(cs.Stats.MemoryStats.Limit),
+		Usage:     cs.Stats.MemoryStats.Usage,
+		UsageP:    float64(cs.Stats.MemoryStats.Usage) / float64(cs.Stats.MemoryStats.Limit),
 	}
 }

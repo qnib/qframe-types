@@ -49,9 +49,9 @@ func (cs *CPUStats) ToMetrics(src string) []Metric {
 		dim[k] = strings.Replace(v, " ", "#", -1)
 	}
 	return []Metric{
-		cs.NewExtMetric(src, "usage_kernel_percent", Gauge, cs.UsageInKernelmodePercentage, dim, cs.Time, true),
-		cs.NewExtMetric(src, "usage_user_percent", Gauge, cs.UsageInUsermodePercentage, dim, cs.Time, true),
-		cs.NewExtMetric(src, "system_usage_percent", Gauge, cs.SystemUsagePercentage, dim, cs.Time, true),
+		cs.NewExtMetric(src, "cpu.usage.kernel.percent", Gauge, cs.UsageInKernelmodePercentage, dim, cs.Time, true),
+		cs.NewExtMetric(src, "cpu.usage.user.percent", Gauge, cs.UsageInUsermodePercentage, dim, cs.Time, true),
+		cs.NewExtMetric(src, "cpu.system.usage.percent", Gauge, cs.SystemUsagePercentage, dim, cs.Time, true),
 	}
 }
 
