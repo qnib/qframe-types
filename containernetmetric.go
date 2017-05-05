@@ -23,6 +23,39 @@ type NetStats struct {
 	TxPackets     float64
 }
 
+func AggregateNetStats(iface string, s1, s2 NetStats) NetStats {
+	// Adds the NetStats counters and names the interface 'iface'
+	return NetStats{
+		Base: s1.Base,
+		Container: s1.Container,
+		NameInterface: iface,
+		RxBytes:    s1.RxBytes + s2.RxBytes,
+		RxDropped:  s1.RxDropped + s2.RxDropped,
+		RxErrors:   s1.RxErrors + s2.RxErrors,
+		RxPackets:  s1.RxPackets + s2.RxPackets,
+		TxBytes:    s1.TxBytes + s2.TxBytes,
+		TxDropped:  s1.TxDropped + s2.TxDropped,
+		TxErrors:   s1.TxErrors + s2.TxErrors,
+		TxPackets:  s1.TxPackets + s2.TxPackets,
+	}
+}
+
+func NewNetStats(base Base, cnt *types.Container) NetStats {
+	return NetStats{
+		Base: base,
+		Container: cnt,
+		NameInterface: "none",
+		RxBytes:    0.0,
+		RxDropped:  0.0,
+		RxErrors:   0.0,
+		RxPackets:  0.0,
+		TxBytes:    0.0,
+		TxDropped:  0.0,
+		TxErrors:   0.0,
+		TxPackets:  0.0,
+	}
+}
+
 
 func (ns *NetStats) ToMetrics(src string) []Metric {
 	dim := map[string]string{
@@ -33,10 +66,12 @@ func (ns *NetStats) ToMetrics(src string) []Metric {
 		"created": fmt.Sprintf("%d", ns.Container.Created),
 	}
 	for k, v := range ns.Container.Labels {
-		dim[k] = strings.Replace(v, " ", "#", -1)
+		dv := strings.Replace(v, " ", "#", -1)
+		dv = strings.Replace(v, ".", "_", -1)
+		dim[k] = dv
 	}
-	iface := "total"
-	if ns.NameInterface == "" {
+	iface := "global"
+	if ns.NameInterface != "" {
 		iface = ns.NameInterface
 		dim["network_iface"] = iface
 	}
@@ -51,3 +86,5 @@ func (ns *NetStats) ToMetrics(src string) []Metric {
 		ns.NewExtMetric(src, "network."+iface+".tx.packets", Gauge, ns.TxPackets, dim, ns.Time, true),
 	}
 }
+
+

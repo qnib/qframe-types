@@ -13,24 +13,24 @@ import (
 type MemoryStats struct {
 	Base
 	Container   *types.Container
-	Failcnt   	uint64
-	Limit     	uint64
-	MaxUsage  	uint64
-	TotalRss  	uint64
+	Failcnt   	float64
+	Limit     	float64
+	MaxUsage  	float64
+	TotalRss  	float64
 	TotalRssP 	float64
-	Usage     	uint64
+	Usage     	float64
 	UsageP 		float64
 }
 
 func NewMemoryStats(src Base, stats *dc.Stats) MemoryStats {
 	return MemoryStats{
 		Base:      src,
-		Failcnt:   stats.MemoryStats.Failcnt,
-		Limit:     stats.MemoryStats.Limit,
-		MaxUsage:  stats.MemoryStats.MaxUsage,
-		TotalRss:  stats.MemoryStats.Stats.TotalRss,
+		Failcnt:   float64(stats.MemoryStats.Failcnt),
+		Limit:     float64(stats.MemoryStats.Limit),
+		MaxUsage:  float64(stats.MemoryStats.MaxUsage),
+		TotalRss:  float64(stats.MemoryStats.Stats.TotalRss),
 		TotalRssP: calcUsage(float64(stats.MemoryStats.Stats.TotalRss), float64(stats.MemoryStats.Limit)),
-		Usage:     stats.MemoryStats.Usage,
+		Usage:     float64(stats.MemoryStats.Usage),
 		UsageP:    calcUsage(float64(stats.MemoryStats.Usage), float64(stats.MemoryStats.Limit)),
 	}
 }
@@ -44,11 +44,17 @@ func (ms *MemoryStats) ToMetrics(src string) []Metric {
 		"created": fmt.Sprintf("%d", ms.Container.Created),
 	}
 	for k, v := range ms.Container.Labels {
-		dim[k] = strings.Replace(v, " ", "#", -1)
+		dv := strings.Replace(v, " ", "#", -1)
+		dv = strings.Replace(v, ".", "_", -1)
+		dim[k] = dv
 	}
 	return []Metric{
 		ms.NewExtMetric(src, "memory.usage.percent", Gauge, ms.UsageP, dim, ms.Time, true),
 		ms.NewExtMetric(src, "memory.total_rss.percent", Gauge, ms.TotalRssP, dim, ms.Time, true),
+		ms.NewExtMetric(src, "memory.total_rss.bytes", Gauge, ms.TotalRss, dim, ms.Time, true),
+		ms.NewExtMetric(src, "memory.usage.bytes", Gauge, ms.Usage, dim, ms.Time, true),
+		ms.NewExtMetric(src, "memory.failcnt", Gauge, ms.Failcnt, dim, ms.Time, true),
+		ms.NewExtMetric(src, "memory.limit.bytes", Gauge, ms.Limit, dim, ms.Time, true),
 	}
 }
 

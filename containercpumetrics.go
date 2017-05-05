@@ -46,7 +46,9 @@ func (cs *CPUStats) ToMetrics(src string) []Metric {
 		"created": fmt.Sprintf("%d", cs.Container.Created),
 	}
 	for k, v := range cs.Container.Labels {
-		dim[k] = strings.Replace(v, " ", "#", -1)
+		dv := strings.Replace(v, " ", "#", -1)
+		dv = strings.Replace(v, ".", "_", -1)
+		dim[k] = dv
 	}
 	return []Metric{
 		cs.NewExtMetric(src, "cpu.usage.kernel.percent", Gauge, cs.UsageInKernelmodePercentage, dim, cs.Time, true),
