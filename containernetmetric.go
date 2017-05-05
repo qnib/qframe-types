@@ -35,14 +35,19 @@ func (ns *NetStats) ToMetrics(src string) []Metric {
 	for k, v := range ns.Container.Labels {
 		dim[k] = strings.Replace(v, " ", "#", -1)
 	}
+	iface := "total"
+	if ns.NameInterface == "" {
+		iface = ns.NameInterface
+		dim["network_iface"] = iface
+	}
 	return []Metric{
-		ns.NewExtMetric(src, "network.total.rx.bytes", Gauge, ns.RxBytes, dim, ns.Time, true),
-		ns.NewExtMetric(src, "network.total.rx.dropped", Gauge, ns.RxDropped, dim, ns.Time, true),
-		ns.NewExtMetric(src, "network.total.rx.errors", Gauge, ns.RxErrors, dim, ns.Time, true),
-		ns.NewExtMetric(src, "network.total.rx.packets", Gauge, ns.RxPackets, dim, ns.Time, true),
-		ns.NewExtMetric(src, "network.total.tx.bytes", Gauge, ns.TxBytes, dim, ns.Time, true),
-		ns.NewExtMetric(src, "network.total.tx.dropped", Gauge, ns.TxDropped, dim, ns.Time, true),
-		ns.NewExtMetric(src, "network.total.tx.errors", Gauge, ns.TxErrors, dim, ns.Time, true),
-		ns.NewExtMetric(src, "network.total.tx.packets", Gauge, ns.TxPackets, dim, ns.Time, true),
+		ns.NewExtMetric(src, "network."+iface+".rx.bytes", Gauge, ns.RxBytes, dim, ns.Time, true),
+		ns.NewExtMetric(src, "network."+iface+".rx.dropped", Gauge, ns.RxDropped, dim, ns.Time, true),
+		ns.NewExtMetric(src, "network."+iface+".rx.errors", Gauge, ns.RxErrors, dim, ns.Time, true),
+		ns.NewExtMetric(src, "network."+iface+".rx.packets", Gauge, ns.RxPackets, dim, ns.Time, true),
+		ns.NewExtMetric(src, "network."+iface+".tx.bytes", Gauge, ns.TxBytes, dim, ns.Time, true),
+		ns.NewExtMetric(src, "network."+iface+".tx.dropped", Gauge, ns.TxDropped, dim, ns.Time, true),
+		ns.NewExtMetric(src, "network."+iface+".tx.errors", Gauge, ns.TxErrors, dim, ns.Time, true),
+		ns.NewExtMetric(src, "network."+iface+".tx.packets", Gauge, ns.TxPackets, dim, ns.Time, true),
 	}
 }
