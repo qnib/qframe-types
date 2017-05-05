@@ -69,3 +69,20 @@ func (cs *ContainerStats) GetMemStats() MemoryStats {
 		UsageP:    float64(cs.Stats.MemoryStats.Usage) / float64(cs.Stats.MemoryStats.Limit),
 	}
 }
+
+func (cs *ContainerStats) GetNetStats() NetStats {
+	cnt := cs.GetContainer()
+	// TODO: Use NewNetStats?
+	return NetStats{
+		Base: 		cs.Base,
+		Container: 	cnt,
+		RxBytes:    float64(cs.Stats.Network.RxBytes),
+		RxDropped:  float64(cs.Stats.Network.RxDropped),
+		RxErrors:   float64(cs.Stats.Network.RxErrors),
+		RxPackets:  float64(cs.Stats.Network.RxPackets),
+		TxBytes:    float64(cs.Stats.Network.TxBytes),
+		TxDropped:  float64(cs.Stats.Network.TxDropped),
+		TxErrors:   float64(cs.Stats.Network.TxErrors),
+		TxPackets:  float64(cs.Stats.Network.TxPackets),
+	}
+}
