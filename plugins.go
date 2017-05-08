@@ -96,6 +96,8 @@ func (p *Plugin) GetInputs() []string {
 
 
 func (p *Plugin) Log(logLevel, msg string) {
+	// TODO: Setup in each Log() invocation seems rude
+	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 	dL, _ := p.Cfg.StringOr("log.level", "info")
 	dI := logStrToInt(dL)
 	lI := logStrToInt(logLevel)
@@ -113,4 +115,11 @@ func NewNamedPlugin(qChan QChan, cfg config.Config, typ, name, version string) P
 	p.Version = version
 	p.Name = name
 	return p
+}
+
+func (p *Plugin) StartTicker(name string, durMs int) Ticker {
+	p.Log("debug", fmt.Sprintf("Start ticker '%s' with duration of %dms", name, durMs))
+	ticker := NewTicker(name, durMs)
+	go ticker.DispatchTicker(p.QChan)
+	return ticker
 }
