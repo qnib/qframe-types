@@ -17,6 +17,7 @@ type Plugin struct {
 	QChan 	QChan
 	Cfg 	config.Config
 	Typ		string
+	Pkg		string
 	Version string
 	Name 	string
 }
@@ -27,6 +28,20 @@ func NewPlugin(qChan QChan, cfg config.Config) Plugin {
 		Cfg: cfg,
 	}
 }
+
+
+func NewNamedPlugin(qChan QChan, cfg config.Config, typ, pkg, name, version string) Plugin {
+	p := Plugin{
+		QChan: 		qChan,
+		Cfg:   		cfg,
+		Typ:   		typ,
+		Pkg:  		pkg,
+		Version:	version,
+		Name: 		name,
+	}
+	return p
+}
+
 
 func logStrToInt(level string) int {
 	def := 6
@@ -94,6 +109,13 @@ func (p *Plugin) GetInputs() []string {
 	return strings.Split(inStr, ",")
 }
 
+func (p *Plugin) GetCfgItems(key string) []string {
+	inStr, err := p.CfgString(key)
+	if err != nil {
+		inStr = ""
+	}
+	return strings.Split(inStr, ",")
+}
 
 func (p *Plugin) Log(logLevel, msg string) {
 	// TODO: Setup in each Log() invocation seems rude
@@ -102,19 +124,8 @@ func (p *Plugin) Log(logLevel, msg string) {
 	dI := logStrToInt(dL)
 	lI := logStrToInt(logLevel)
 	if dI >= lI {
-		log.Printf("[%+6s] %s >> %s", strings.ToUpper(logLevel), p.Name, msg)
+		log.Printf("[%+6s] %15s Name:%-10s >> %s", strings.ToUpper(logLevel), p.Pkg, p.Name, msg)
 	}
-}
-
-func NewNamedPlugin(qChan QChan, cfg config.Config, typ, name, version string) Plugin {
-	p := Plugin{
-		QChan: qChan,
-		Cfg:   cfg,
-	}
-	p.Typ = typ
-	p.Version = version
-	p.Name = name
-	return p
 }
 
 func (p *Plugin) StartTicker(name string, durMs int) Ticker {

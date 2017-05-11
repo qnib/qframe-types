@@ -8,6 +8,7 @@ import (
 const (
 	MsgCEE = "cee"
 	MsgTCP = "tcp"
+	MsgDLOG = "docker-log"
 )
 
 

@@ -3,7 +3,6 @@ package qtypes
 import (
 	"github.com/fsouza/go-dockerclient"
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/events"
 )
 
 type ContainerStats struct {
@@ -18,11 +17,6 @@ func NewContainerStats(src string, stats *docker.Stats, cnt docker.APIContainers
 		Stats: stats,
 		Container: cnt,
 	}
-}
-
-type ContainerEvent struct {
-	Event events.Message
-	Container types.ContainerJSON
 }
 
 func (cs *ContainerStats) GetContainer() *types.Container {
