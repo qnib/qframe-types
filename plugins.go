@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"github.com/zpatrick/go-config"
+	"github.com/qnib/qframe-utils"
 )
 
 const (
@@ -14,12 +15,13 @@ const (
 )
 
 type Plugin struct {
-	QChan 	QChan
-	Cfg 	config.Config
-	Typ		string
-	Pkg		string
-	Version string
-	Name 	string
+	QChan 			QChan
+	Cfg 			config.Config
+	Typ				string
+	Pkg				string
+	Version 		string
+	Name 			string
+	LogOnlyPlugs 	[]string
 }
 
 func NewPlugin(qChan QChan, cfg config.Config) Plugin {
@@ -32,12 +34,17 @@ func NewPlugin(qChan QChan, cfg config.Config) Plugin {
 
 func NewNamedPlugin(qChan QChan, cfg config.Config, typ, pkg, name, version string) Plugin {
 	p := Plugin{
-		QChan: 		qChan,
-		Cfg:   		cfg,
-		Typ:   		typ,
-		Pkg:  		pkg,
-		Version:	version,
-		Name: 		name,
+		QChan: 			qChan,
+		Cfg:   			cfg,
+		Typ:   			typ,
+		Pkg:  			pkg,
+		Version:		version,
+		Name: 			name,
+		LogOnlyPlugs:   []string{},
+	}
+	logPlugs, err := cfg.String("log.only-plugins")
+	if err == nil {
+		p.LogOnlyPlugs = strings.Split(logPlugs, ",")
 	}
 	return p
 }
@@ -118,6 +125,9 @@ func (p *Plugin) GetCfgItems(key string) []string {
 }
 
 func (p *Plugin) Log(logLevel, msg string) {
+	if len(p.LogOnlyPlugs) != 0 && ! qutils.IsItem(p.LogOnlyPlugs, p.Name) {
+		return
+	}
 	// TODO: Setup in each Log() invocation seems rude
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 	dL, _ := p.Cfg.StringOr("log.level", "info")
