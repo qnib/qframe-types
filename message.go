@@ -9,6 +9,7 @@ const (
 	MsgCEE = "cee"
 	MsgTCP = "tcp"
 	MsgDLOG = "docker-log"
+	MsgMetric = "metric" //needs to have name,time and value field ; optional tags (key1=val1,key2=val2)
 )
 
 

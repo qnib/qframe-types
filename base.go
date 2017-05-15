@@ -59,6 +59,10 @@ func (b *Base) AppendSource(src string) {
 	b.SourcePath = append(b.SourcePath, src)
 }
 
+func (b *Base) GetLastSource() string {
+	return b.SourcePath[len(b.SourcePath)-1]
+}
+
 func (b *Base) IsLastSource(src string) bool {
 	return b.SourcePath[len(b.SourcePath)-1] == src
 }
