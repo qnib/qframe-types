@@ -16,7 +16,7 @@ const (
 
 type Plugin struct {
 	QChan 			QChan
-	Cfg 			config.Config
+	Cfg 			*config.Config
 	Typ				string
 	Pkg				string
 	Version 		string
@@ -24,7 +24,7 @@ type Plugin struct {
 	LogOnlyPlugs 	[]string
 }
 
-func NewPlugin(qChan QChan, cfg config.Config) Plugin {
+func NewPlugin(qChan QChan, cfg *config.Config) Plugin {
 	return Plugin{
 		QChan: qChan,
 		Cfg: cfg,
@@ -32,7 +32,7 @@ func NewPlugin(qChan QChan, cfg config.Config) Plugin {
 }
 
 
-func NewNamedPlugin(qChan QChan, cfg config.Config, typ, pkg, name, version string) Plugin {
+func NewNamedPlugin(qChan QChan, cfg *config.Config, typ, pkg, name, version string) Plugin {
 	p := Plugin{
 		QChan: 			qChan,
 		Cfg:   			cfg,
