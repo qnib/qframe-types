@@ -50,7 +50,7 @@ func NewNamedPlugin(qChan QChan, cfg *config.Config, typ, pkg, name, version str
 }
 
 
-func logStrToInt(level string) int {
+func LogStrToInt(level string) int {
 	def := 6
 	switch level {
 	case "error":
@@ -131,8 +131,8 @@ func (p *Plugin) Log(logLevel, msg string) {
 	// TODO: Setup in each Log() invocation seems rude
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 	dL, _ := p.Cfg.StringOr("log.level", "info")
-	dI := logStrToInt(dL)
-	lI := logStrToInt(logLevel)
+	dI := LogStrToInt(dL)
+	lI := LogStrToInt(logLevel)
 	if dI >= lI {
 		log.Printf("[%+6s] %15s Name:%-10s >> %s", strings.ToUpper(logLevel), p.Pkg, p.Name, msg)
 	}
