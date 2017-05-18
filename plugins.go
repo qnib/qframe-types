@@ -63,6 +63,8 @@ func LogStrToInt(level string) int {
 		return 6
 	case "debug":
 		return 7
+	case "trace":
+		return 8
 	default:
 		return def
 	}
