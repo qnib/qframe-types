@@ -351,6 +351,12 @@
 			"revisionTime": "2017-04-22T14:06:33Z"
 		},
 		{
+			"checksumSHA1": "Pw0aAbDINSQbkgNouKlzi2g7mAI=",
+			"path": "github.com/qnib/statsdaemon/lib",
+			"revision": "93f7fdb227047c8808bb9c6058fe757cf76cd138",
+			"revisionTime": "2017-05-18T11:09:13Z"
+		},
+		{
 			"checksumSHA1": "zmC8/3V4ls53DJlNTKDZwPSC/dA=",
 			"path": "github.com/satori/go.uuid",
 			"revision": "5bf94b69c6b68ee1b541973bb8e1144db23a194b",
