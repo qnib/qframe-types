@@ -297,10 +297,10 @@
 			"revisionTime": "2017-03-27T23:54:44Z"
 		},
 		{
-			"checksumSHA1": "+IH9gXMht4fL/fxKRZ4sqGBps1g=",
+			"checksumSHA1": "kPviFEMWr7Ynp/OsxggKRSv0TEE=",
 			"path": "github.com/go-ini/ini",
-			"revision": "e7fea39b01aea8d5671f6858f0532f56e8bff3a5",
-			"revisionTime": "2017-03-28T15:39:02Z"
+			"revision": "afbc45e87f3ba324c532d12c71918ef52e0fb194",
+			"revisionTime": "2017-05-19T02:37:13Z"
 		},
 		{
 			"checksumSHA1": "zodCK6AG5/I4EcNPTma0cRFls1k=",

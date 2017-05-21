@@ -17,11 +17,13 @@ const (
 type Plugin struct {
 	QChan 			QChan
 	Cfg 			*config.Config
+	MyID			int
 	Typ				string
 	Pkg				string
 	Version 		string
 	Name 			string
 	LogOnlyPlugs 	[]string
+	MsgCount		map[string]float64
 }
 
 func NewPlugin(qChan QChan, cfg *config.Config) Plugin {
@@ -41,6 +43,12 @@ func NewNamedPlugin(qChan QChan, cfg *config.Config, typ, pkg, name, version str
 		Version:		version,
 		Name: 			name,
 		LogOnlyPlugs:   []string{},
+		MsgCount:       map[string]float64{
+			"received": 0.0,
+			"loopDrop": 0.0,
+			"inputDrop": 0.0,
+			"successDrop": 0.0,
+		},
 	}
 	logPlugs, err := cfg.String("log.only-plugins")
 	if err == nil {
@@ -69,7 +77,6 @@ func LogStrToInt(level string) int {
 		return def
 	}
 }
-
 
 func (p *Plugin) CfgString(path string) (string, error) {
 	res, err := p.Cfg.String(fmt.Sprintf("%s.%s.%s", p.Typ, p.Name, path))
@@ -145,4 +152,31 @@ func (p *Plugin) StartTicker(name string, durMs int) Ticker {
 	ticker := NewTicker(name, durMs)
 	go ticker.DispatchTicker(p.QChan)
 	return ticker
+}
+
+func (p *Plugin) StopProcessingMessage(qm Message, allowEmptyInput bool) bool {
+	p.MsgCount["received"]++
+	if p.MyID == qm.SourceID {
+		p.Log("debug", "Msg came from the same GID")
+		p.MsgCount["loopDrop"]++
+		return true
+	}
+	// TODO: Most likely invoked often, so check if performant enough
+	inputs := p.GetInputs()
+	if ! allowEmptyInput && len(inputs) == 0 {
+		msg := fmt.Sprintf("Plugin '%s' does not allow empty imputs, please set '%s.%s.inputs'", p.Name, p.Typ, p.Name)
+		log.Fatal(msg)
+	}
+	srcSuccess := p.CfgBoolOr("source-success", true)
+	if ! qm.InputsMatch(inputs) {
+		p.Log("debug", fmt.Sprintf("InputsMatch(%v) = false", inputs))
+		p.MsgCount["inputDrop"]++
+		return true
+	}
+	if qm.SourceSuccess != srcSuccess {
+		p.Log("debug", "qcs.SourceSuccess != srcSuccess")
+		p.MsgCount["successDrop"]++
+		return true
+	}
+	return false
 }
