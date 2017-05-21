@@ -6,6 +6,7 @@ import (
 	"strings"
 	"github.com/zpatrick/go-config"
 	"github.com/qnib/qframe-utils"
+	"time"
 )
 
 const (
@@ -61,6 +62,8 @@ func NewNamedPlugin(qChan QChan, cfg *config.Config, typ, pkg, name, version str
 func LogStrToInt(level string) int {
 	def := 6
 	switch level {
+	case "panic":
+		return 0
 	case "error":
 		return 3
 	case "warn":
@@ -142,13 +145,16 @@ func (p *Plugin) Log(logLevel, msg string) {
 	dL, _ := p.Cfg.StringOr("log.level", "info")
 	dI := LogStrToInt(dL)
 	lI := LogStrToInt(logLevel)
-	if dI >= lI {
-		log.Printf("[%+6s] %15s Name:%-10s >> %s", strings.ToUpper(logLevel), p.Pkg, p.Name, msg)
+	lMsg := fmt.Sprintf("[%+6s] %15s Name:%-10s >> %s", strings.ToUpper(logLevel), p.Pkg, p.Name, msg)
+	if lI == 0 {
+		log.Panic(lMsg)
+	} else if dI >= lI {
+		log.Println(lMsg)
 	}
 }
 
 func (p *Plugin) StartTicker(name string, durMs int) Ticker {
-	p.Log("debug", fmt.Sprintf("Start ticker '%s' with duration of %dms", name, durMs))
+	p.Log("info", fmt.Sprintf("Start ticker '%s' with duration of %dms", name, durMs))
 	ticker := NewTicker(name, durMs)
 	go ticker.DispatchTicker(p.QChan)
 	return ticker
@@ -179,4 +185,105 @@ func (p *Plugin) StopProcessingMessage(qm Message, allowEmptyInput bool) bool {
 		return true
 	}
 	return false
+}
+
+func (p *Plugin) StopProcessingMetric(qm Metric, allowEmptyInput bool) bool {
+	p.MsgCount["received"]++
+	// TODO: Most likely invoked often, so check if performant enough
+	inputs := p.GetInputs()
+	if ! allowEmptyInput && len(inputs) == 0 {
+		msg := fmt.Sprintf("Plugin '%s' does not allow empty imputs, please set '%s.%s.inputs'", p.Name, p.Typ, p.Name)
+		log.Fatal(msg)
+	}
+	srcSuccess := p.CfgBoolOr("source-success", true)
+	if ! qm.InputsMatch(inputs) {
+		p.Log("debug", fmt.Sprintf("InputsMatch(%v) = false", inputs))
+		p.MsgCount["inputDrop"]++
+		return true
+	}
+	if qm.SourceSuccess != srcSuccess {
+		p.Log("debug", "qcs.SourceSuccess != srcSuccess")
+		p.MsgCount["successDrop"]++
+		return true
+	}
+	return false
+}
+
+func (p *Plugin) StopProcessingCntEvent(ce ContainerEvent, allowEmptyInput bool) bool {
+	p.MsgCount["received"]++
+	// TODO: Most likely invoked often, so check if performant enough
+	inputs := p.GetInputs()
+	if ! allowEmptyInput && len(inputs) == 0 {
+		msg := fmt.Sprintf("Plugin '%s' does not allow empty imputs, please set '%s.%s.inputs'", p.Name, p.Typ, p.Name)
+		log.Fatal(msg)
+	}
+	if ! ce.InputsMatch(inputs) {
+		p.Log("debug", fmt.Sprintf("InputsMatch(%v) = false", inputs))
+		p.MsgCount["inputDrop"]++
+		return true
+	}
+	srcSuccess := p.CfgBoolOr("source-success", true)
+	if ce.SourceSuccess != srcSuccess {
+		p.Log("debug", "ce.SourceSuccess != srcSuccess")
+		p.MsgCount["successDrop"]++
+		return true
+	}
+	return false
+}
+
+func (p *Plugin) StopProcessingCntStats(qcs ContainerStats, allowEmptyInput bool) bool {
+	p.MsgCount["received"]++
+	inputs := p.GetInputs()
+	if ! allowEmptyInput && len(inputs) == 0 {
+		msg := fmt.Sprintf("Plugin '%s' does not allow empty imputs, please set '%s.%s.inputs'", p.Name, p.Typ, p.Name)
+		log.Fatal(msg)
+	}
+	if qcs.IsLastSource(p.Name) {
+		p.Log("debug", "IsLastSource() = true")
+		return true
+
+	}
+	if ! qcs.InputsMatch(inputs) {
+		p.Log("debug", fmt.Sprintf("InputsMatch(%v) = false", inputs))
+		return true
+
+	}
+	srcSuccess := p.CfgBoolOr("source-success", true)
+	if qcs.SourceSuccess != srcSuccess {
+		p.Log("debug", "qcs.SourceSuccess != srcSuccess")
+		return true
+	}
+	return false
+}
+
+func (p *Plugin) DispatchMsgCount() {
+	tickMs := p.CfgIntOr("count-ticker-ms", 5000)
+	p.Log("info", fmt.Sprintf("Dispatch goroutine to send MsgCount every %dms", tickMs))
+	ticker := time.NewTicker(time.Duration(tickMs)*time.Millisecond).C
+	pre := map[string]float64{}
+	for {
+		tick := <-ticker
+		pre = p.SendMsgCount(tick, pre)
+	}
+}
+
+func (p *Plugin) SendMsgCount(tick time.Time, pre map[string]float64) map[string]float64 {
+	dims := map[string]string{
+		"plugin_name": p.Name,
+		"plugin_version": p.Version,
+		"plugin_type": p.Typ,
+	}
+	qm := NewExt(p.Name, "none", Counter, 0.0, dims, tick, false)
+	for k,v := range p.MsgCount {
+		if _, ok := pre[k]; !ok {
+			pre[k] = v
+		} else if pre[k] == v {
+			continue
+		}
+		qm.Name = fmt.Sprintf("msg.%s", k)
+		p.Log("debug", fmt.Sprintf("Send MsgCount %s=%f", qm.Name,v))
+		qm.Value = float64(v)
+		p.QChan.SendData(qm)
+	}
+	return pre
 }
