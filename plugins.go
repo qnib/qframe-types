@@ -7,6 +7,8 @@ import (
 	"github.com/zpatrick/go-config"
 	"github.com/qnib/qframe-utils"
 	"time"
+	"github.com/pkg/errors"
+	"strconv"
 )
 
 const (
@@ -25,6 +27,8 @@ type Plugin struct {
 	Name 			string
 	LogOnlyPlugs 	[]string
 	MsgCount		map[string]float64
+	LocalCfg 		map[string]string
+
 }
 
 func NewPlugin(qChan QChan, cfg *config.Config) Plugin {
@@ -51,6 +55,7 @@ func NewNamedPlugin(qChan QChan, cfg *config.Config, typ, pkg, name, version str
 			"successDrop": 0.0,
 		},
 	}
+	p.LocalCfg, _  = cfg.Settings()
 	logPlugs, err := cfg.String("log.only-plugins")
 	if err == nil {
 		p.LogOnlyPlugs = strings.Split(logPlugs, ",")
@@ -82,8 +87,11 @@ func LogStrToInt(level string) int {
 }
 
 func (p *Plugin) CfgString(path string) (string, error) {
-	res, err := p.Cfg.String(fmt.Sprintf("%s.%s.%s", p.Typ, p.Name, path))
-	return res, err
+	key := fmt.Sprintf("%s.%s.%s", p.Typ, p.Name, path)
+	if res, ok := p.LocalCfg[key]; ok {
+		return res, nil
+	}
+	return "", errors.New("Could not find "+key)
 }
 
 func (p *Plugin) CfgStringOr(path, alt string) string {
@@ -95,8 +103,11 @@ func (p *Plugin) CfgStringOr(path, alt string) string {
 }
 
 func (p *Plugin) CfgInt(path string) (int, error) {
-	res, err := p.Cfg.Int(fmt.Sprintf("%s.%s.%s", p.Typ, p.Name, path))
-	return res, err
+	key := fmt.Sprintf("%s.%s.%s", p.Typ, p.Name, path)
+	if res, ok := p.LocalCfg[key]; ok {
+		return strconv.Atoi(res)
+	}
+	return 0, errors.New("Could not find "+key)
 }
 
 func (p *Plugin) CfgIntOr(path string, alt int) int {
@@ -108,8 +119,19 @@ func (p *Plugin) CfgIntOr(path string, alt int) int {
 }
 
 func (p *Plugin) CfgBool(path string) (bool, error) {
-	res, err := p.Cfg.Bool(fmt.Sprintf("%s.%s.%s", p.Typ, p.Name, path))
-	return res, err
+	key := fmt.Sprintf("%s.%s.%s", p.Typ, p.Name, path)
+	if res, ok := p.LocalCfg[key]; ok {
+		switch res {
+		case "true":
+			return true, nil
+		case "false":
+			return false, nil
+		default:
+			return false, errors.New(fmt.Sprintf("Key '%s' neither false not true, but %s: ", key, res))
+
+		}
+	}
+	return false, errors.New("Could not find "+key)
 }
 
 func (p *Plugin) CfgBoolOr(path string, alt bool) bool {
