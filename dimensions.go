@@ -3,6 +3,7 @@ package qtypes
 import (
 	"fmt"
 	"strings"
+	"sort"
 )
 
 type Dimensions struct {
@@ -21,8 +22,9 @@ func (dim *Dimensions) Add(key,val string) {
 
 func (dim *Dimensions) String() string {
 	res := []string{}
-	for k,v := range dim.Map {
+		for k,v := range dim.Map {
 		res = append(res, fmt.Sprintf("%s=%s", k,v))
 	}
+	sort.Strings(res)
 	return strings.Join(res, ",")
 }
