@@ -39,6 +39,7 @@ func (ms *MemoryStats) ToMetrics(src string) []Metric {
 	dim := map[string]string{
 		"container_id": ms.Container.ID,
 		"container_name": strings.Trim(ms.Container.Names[0], "/"),
+		"service_slot": AssembleServiceSlot(ms.Container),
 		"image_name": ms.Container.Image,
 		"command": strings.Replace(ms.Container.Command, " ", "#", -1),
 		"created": fmt.Sprintf("%d", ms.Container.Created),

@@ -62,6 +62,7 @@ func (ns *NetStats) ToMetrics(src string) []Metric {
 		"container_id": ns.Container.ID,
 		"container_name": strings.Trim(ns.Container.Names[0], "/"),
 		"image_name": ns.Container.Image,
+		"service_slot": AssembleServiceSlot(ns.Container),
 		"command": strings.Replace(ns.Container.Command, " ", "#", -1),
 		"created": fmt.Sprintf("%d", ns.Container.Created),
 	}
