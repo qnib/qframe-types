@@ -17,3 +17,19 @@ func AssembleServiceSlot(cnt *types.Container) string {
 	return "<nil>"
 }
 
+func AssembleDefaultDimensions(cnt *types.Container) map[string]string {
+	dims := map[string]string{
+		"container_id":   cnt.ID,
+		"container_name": strings.Trim(cnt.Names[0], "/"),
+		"image_name":     cnt.Image,
+		"service_slot":   AssembleServiceSlot(cnt),
+		"command":        strings.Replace(cnt.Command, " ", "#", -1),
+		"created":        fmt.Sprintf("%d", cnt.Created),
+	}
+	for k, v := range cnt.Labels {
+		dv := strings.Replace(v, " ", "#", -1)
+		dv = strings.Replace(v, ".", "_", -1)
+		dims[k] = dv
+	}
+	return dims
+}

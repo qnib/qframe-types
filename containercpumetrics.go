@@ -39,19 +39,7 @@ func NewCPUStats(src Base, stats *dc.Stats) *CPUStats {
 
 
 func (cs *CPUStats) ToMetrics(src string) []Metric {
-	dim := map[string]string{
-		"container_id": cs.Container.ID,
-		"container_name": strings.Trim(cs.Container.Names[0], "/"),
-		"image_name": cs.Container.Image,
-		"service_slot": AssembleServiceSlot(cs.Container),
-		"command": strings.Replace(cs.Container.Command, " ", "#", -1),
-		"created": fmt.Sprintf("%d", cs.Container.Created),
-	}
-	for k, v := range cs.Container.Labels {
-		dv := strings.Replace(v, " ", "#", -1)
-		dv = strings.Replace(v, ".", "_", -1)
-		dim[k] = dv
-	}
+	dim := AssembleDefaultDimensions(cs.Container)
 	return []Metric{
 		cs.NewExtMetric(src, "cpu.usage.kernel.percent", Gauge, cs.UsageInKernelmodePercentage, dim, cs.Time, true),
 		cs.NewExtMetric(src, "cpu.usage.user.percent", Gauge, cs.UsageInUsermodePercentage, dim, cs.Time, true),
