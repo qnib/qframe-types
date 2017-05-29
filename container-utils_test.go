@@ -13,10 +13,9 @@ func TestAssembleServiceSlot(t *testing.T) {
 	got := AssembleServiceSlot(cnt)
 	assert.Equal(t, "<nil>", got)
 	cnt.Labels = map[string]string{
-		"com.docker.swarm.service.name": "service1",
-		"com.docker.swarm.task.slot": "1",
+		"com.docker.swarm.task.name": "service.1.id",
 	}
 	got = AssembleServiceSlot(cnt)
-	assert.Equal(t, "service1.1", got)
+	assert.Equal(t, "service.1", got)
 
 }
