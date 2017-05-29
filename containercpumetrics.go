@@ -37,11 +37,13 @@ func NewCPUStats(src Base, stats *dc.Stats) *CPUStats {
 	}
 }
 
+
 func (cs *CPUStats) ToMetrics(src string) []Metric {
 	dim := map[string]string{
 		"container_id": cs.Container.ID,
 		"container_name": strings.Trim(cs.Container.Names[0], "/"),
 		"image_name": cs.Container.Image,
+		"service_slot": AssembleServiceSlot(cs.Container),
 		"command": strings.Replace(cs.Container.Command, " ", "#", -1),
 		"created": fmt.Sprintf("%d", cs.Container.Created),
 	}
