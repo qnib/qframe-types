@@ -2,10 +2,8 @@ package qtypes
 
 
 import (
-	"strings"
 	"github.com/docker/docker/api/types"
 	dc "github.com/fsouza/go-dockerclient"
-	"fmt"
 	"math"
 )
 

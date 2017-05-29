@@ -2,8 +2,6 @@ package qtypes
 
 
 import (
-	"fmt"
-	"strings"
 	"github.com/docker/docker/api/types"
 )
 

@@ -2,8 +2,6 @@ package qtypes
 
 import (
 	"strconv"
-	"strings"
-	"fmt"
 	"github.com/elastic/beats/libbeat/common"
 	"github.com/docker/docker/api/types"
 	dc "github.com/fsouza/go-dockerclient"
