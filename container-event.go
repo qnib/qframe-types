@@ -8,9 +8,9 @@ import (
 )
 type ContainerEvent struct {
 	Base
-	Message   string
-	Container types.ContainerJSON
-	Event events.Message
+	Message   	string
+	Container 	types.ContainerJSON
+	Event 		events.Message
 }
 
 func NewContainerEvent(base Base, cnt types.ContainerJSON, event events.Message) ContainerEvent {

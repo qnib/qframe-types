@@ -14,6 +14,8 @@ type Base struct {
 	SourceID		int
 	SourcePath		[]string
 	SourceSuccess 	bool
+	Data 			map[string]string // Additional Data
+
 }
 
 func NewBase(src string) Base {
@@ -27,6 +29,7 @@ func NewTimedBase(src string, t time.Time) Base {
 		SourceID: 0,
 		SourcePath: []string{src},
 		SourceSuccess: true,
+		Data: map[string]string{},
 	}
 }
 
