@@ -3,6 +3,7 @@ package qtypes
 import (
 	"strings"
 	"github.com/docker/docker/api/types"
+	"github.com/qnib/qframe-utils"
 )
 
 const (
@@ -17,14 +18,14 @@ type Message struct {
 	Base
 	Container   types.ContainerJSON
 	Name       	string            	`json:"name"`
-	LogLevel       string				`json:"loglevel"`
+	LogLevel    string				`json:"loglevel"`
 	MessageType	string            	`json:"type"`
 	Message     string            	`json:"value"`
 	KV			map[string]string 	`json:"data"`
 }
 
 func NewMessage(base Base, name, mType, msg string) Message {
-	return Message{
+	m := Message{
 		Base: base,
 		Name: name,
 		Container: types.ContainerJSON{},
@@ -33,6 +34,8 @@ func NewMessage(base Base, name, mType, msg string) Message {
 		Message: msg,
 		KV: map[string]string{},
 	}
+	m.SourceID = int(qutils.GetGID())
+	return m
 }
 
 func NewContainerMessage(base Base, cnt types.ContainerJSON, name, mType, msg string) Message {

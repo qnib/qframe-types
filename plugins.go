@@ -197,12 +197,12 @@ func (p *Plugin) StopProcessingMessage(qm Message, allowEmptyInput bool) bool {
 	}
 	srcSuccess := p.CfgBoolOr("source-success", true)
 	if ! qm.InputsMatch(inputs) {
-		p.Log("debug", fmt.Sprintf("InputsMatch(%v) = false", inputs))
+		p.Log("debug", fmt.Sprintf("InputsMatch(%v) != %s | Msg: %s", inputs, qm.GetLastSource(), qm.Message))
 		p.MsgCount["inputDrop"]++
 		return true
 	}
 	if qm.SourceSuccess != srcSuccess {
-		p.Log("debug", "qcs.SourceSuccess != srcSuccess")
+		p.Log("debug", fmt.Sprintf("qm.SourceSuccess (%v) != (%v) srcSuccess", qm.SourceSuccess, srcSuccess))
 		p.MsgCount["successDrop"]++
 		return true
 	}
