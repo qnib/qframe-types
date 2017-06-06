@@ -219,12 +219,12 @@ func (p *Plugin) StopProcessingMetric(qm Metric, allowEmptyInput bool) bool {
 	}
 	srcSuccess := p.CfgBoolOr("source-success", true)
 	if ! qm.InputsMatch(inputs) {
-		p.Log("debug", fmt.Sprintf("InputsMatch(%v) = false", inputs))
+		p.Log("debug", fmt.Sprintf("InputsMatch(%v) != %s", inputs, qm.GetLastSource()))
 		p.MsgCount["inputDrop"]++
 		return true
 	}
 	if qm.SourceSuccess != srcSuccess {
-		p.Log("debug", "qcs.SourceSuccess != srcSuccess")
+		p.Log("debug", fmt.Sprintf("qcs.SourceSuccess != srcSuccess (%v)", srcSuccess))
 		p.MsgCount["successDrop"]++
 		return true
 	}
