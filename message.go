@@ -4,6 +4,7 @@ import (
 	"strings"
 	"github.com/docker/docker/api/types"
 	"github.com/qnib/qframe-utils"
+	"fmt"
 )
 
 const (
@@ -41,7 +42,14 @@ func NewMessage(base Base, name, mType, msg string) Message {
 func NewContainerMessage(base Base, cnt types.ContainerJSON, name, mType, msg string) Message {
 	m := NewMessage(base, name, mType, msg)
 	m.Container = cnt
+	m.ID = m.GenContainerMsgID()
 	return m
+}
+
+// GenContainerMsgID uses "<container_id>-<time.UnixNano()>-<MSG>" and does a sha1 hash.
+func (m *Message) GenContainerMsgID() string {
+	s := fmt.Sprintf("%s-%d-%s", m.Container.ID, m.Time.UnixNano(), m.Message)
+	return Sha1HashString(s)
 }
 
 func (m *Message) GetContainerName() string {

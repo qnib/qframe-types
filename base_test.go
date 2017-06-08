@@ -54,3 +54,8 @@ func TestBase_InputsMatch(t *testing.T) {
 	b := NewBase("src1")
 	assert.True(t, b.InputsMatch([]string{"src2", "src1"}), "Should match input list 'src2', 'src1'")
 }
+
+func TestSha1HashString(t *testing.T) {
+	s := "sha1 this string"
+	assert.Equal(t, "cf23df2207d99a74fbe169e3eba035e633b65d94", Sha1HashString(s))
+}
