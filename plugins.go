@@ -91,6 +91,9 @@ func (p *Plugin) CfgString(path string) (string, error) {
 	if res, ok := p.LocalCfg[key]; ok {
 		return res, nil
 	}
+	if res, ok := p.LocalCfg[path]; ok {
+		return res, nil
+	}
 	return "", errors.New("Could not find "+key)
 }
 
