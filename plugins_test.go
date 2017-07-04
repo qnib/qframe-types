@@ -66,3 +66,14 @@ func TestPlugin_CfgInt(t *testing.T) {
 	got = p.CfgIntOr("nil", 2)
 	assert.Equal(t, 2, got)
 }
+
+func TestPlugin_GetInputs(t *testing.T) {
+	cfg := config.NewConfig([]config.Provider{})
+	p := NewNamedPlugin(NewQChan(), cfg, "testTyp", "testPkg", "testName", "0.0.0")
+	assert.Equal(t, 0, len(p.GetInputs()))
+	cfg = config.NewConfig([]config.Provider{config.NewStatic(map[string]string{
+		"testTyp.testName.inputs": "test",
+	})})
+	p = NewNamedPlugin(NewQChan(), cfg, "testTyp", "testPkg", "testName", "0.0.0")
+	assert.Equal(t, 1, len(p.GetInputs()))
+}
