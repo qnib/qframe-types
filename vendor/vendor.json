@@ -226,7 +226,6 @@
 		},
 		{
 			"checksumSHA1": "UmXGieuTJQOzJPspPJTVKKKMiUA=",
-			"origin": "github.com/qnib/qframe-types/vendor/github.com/docker/go-units",
 			"path": "github.com/docker/go-units",
 			"revision": "0dadbb0345b35ec7ef35e228dabb8de89a65bf52",
 			"revisionTime": "2017-01-27T09:51:30Z"
@@ -366,8 +365,8 @@
 			"checksumSHA1": "PdQm3s8DoVJ17Vk8n7o5iPa7PK0=",
 			"origin": "github.com/docker/docker/vendor/github.com/pkg/errors",
 			"path": "github.com/pkg/errors",
-			"revision": "a9358df62cde2deb8184c742e6fb8d16c98a04a9",
-			"revisionTime": "2017-07-04T05:02:24Z"
+			"revision": "316b4ba9c2891b9ab4437f1c6a52df2d3d0ca47b",
+			"revisionTime": "2017-08-03T04:14:05Z"
 		},
 		{
 			"checksumSHA1": "LuFv4/jlrmFNnDb/5SCSEPAM9vU=",
@@ -407,7 +406,6 @@
 		},
 		{
 			"checksumSHA1": "Y+HGqEkYM15ir+J93MEaHdyFy0c=",
-			"origin": "github.com/qnib/qframe-types/vendor/golang.org/x/net/context",
 			"path": "golang.org/x/net/context",
 			"revision": "570fa1c91359c1869590e9cedf3b53162a51a167",
 			"revisionTime": "2017-07-01T00:59:03Z"
@@ -427,7 +425,6 @@
 		},
 		{
 			"checksumSHA1": "Pki0iA65Dtsjh4gtabPkp/lOa2I=",
-			"origin": "github.com/qnib/qframe-types/vendor/golang.org/x/sys/windows",
 			"path": "golang.org/x/sys/windows",
 			"revision": "94b76065f2d2081d0fef24a6e67c571f51a6408a",
 			"revisionTime": "2017-07-01T06:49:51Z"
